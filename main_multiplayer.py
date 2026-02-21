@@ -148,6 +148,7 @@ class Game:
         self.my_player_id = None
         self.remote_players = {}  # {player_id: RemotePlayer}
         self.last_network_update = 0  # Timer pour limiter les mises à jour réseau
+        self.next_enemy_id = 1  # ID unique pour les ennemis en multijoueur
 
     def setup_multiplayer(self, server_host, server_port):
         """
@@ -166,6 +167,9 @@ class Game:
         self.network_client.on_player_update = self.on_network_player_update
         self.network_client.on_inventory_update = self.on_network_inventory_update
         self.network_client.on_building_place = self.on_network_building_place
+        self.network_client.on_enemy_spawn = self.on_network_enemy_spawn
+        self.network_client.on_enemy_update = self.on_network_enemy_update
+        self.network_client.on_enemy_death = self.on_network_enemy_death
         self.network_client.on_game_state = self.on_network_game_state
 
         # Se connecter
@@ -228,6 +232,41 @@ class Game:
             self.buildings_list.append(new_building)
             print(f"🏗️ Bâtiment {building_type} placé en ({grid_x}, {grid_y})")
 
+    def on_network_enemy_spawn(self, enemy_id, enemy_type, spawn_x, spawn_y):
+        """Appelé quand un ennemi apparaît (spawné par un autre client)"""
+        # Créer l'ennemi localement selon son type
+        enemy_classes = {
+            'zombie': Zombie,
+            'mutant': Mutant,
+            'wolf': Wolf
+        }
+
+        if enemy_type in enemy_classes:
+            enemy = enemy_classes[enemy_type](spawn_x, spawn_y)
+            # Stocker l'ID réseau pour la synchronisation
+            enemy.network_id = enemy_id
+            self.enemies_list.append(enemy)
+            print(f"👾 Ennemi {enemy_type} (ID:{enemy_id}) spawné à ({spawn_x}, {spawn_y})")
+
+    def on_network_enemy_update(self, enemy_id, x, y, health):
+        """Appelé quand un ennemi est mis à jour"""
+        # Trouver l'ennemi par son ID réseau
+        for enemy in self.enemies_list:
+            if hasattr(enemy, 'network_id') and enemy.network_id == enemy_id:
+                enemy.position_x = x
+                enemy.position_y = y
+                enemy.health_points = health
+                break
+
+    def on_network_enemy_death(self, enemy_id):
+        """Appelé quand un ennemi meurt"""
+        # Retirer l'ennemi de la liste
+        for i, enemy in enumerate(self.enemies_list):
+            if hasattr(enemy, 'network_id') and enemy.network_id == enemy_id:
+                self.enemies_list.pop(i)
+                print(f"💀 Ennemi (ID:{enemy_id}) tué")
+                break
+
     def on_network_game_state(self, data):
         """Appelé quand on reçoit l'état complet du jeu (synchronisation initiale)"""
         print("📥 Synchronisation de l'état du jeu...")
@@ -259,11 +298,26 @@ class Game:
                 )
                 self.buildings_list.append(new_building)
 
+        # Charger les ennemis
+        enemy_classes = {
+            'zombie': Zombie,
+            'mutant': Mutant,
+            'wolf': Wolf
+        }
+        for enemy_id_str, enemy_data in data.get('enemies', {}).items():
+            enemy_id = int(enemy_id_str)
+            enemy_type = enemy_data['type']
+            if enemy_type in enemy_classes:
+                enemy = enemy_classes[enemy_type](enemy_data['x'], enemy_data['y'])
+                enemy.health_points = enemy_data.get('health', 30)
+                enemy.network_id = enemy_id
+                self.enemies_list.append(enemy)
+
         # Charger l'inventaire partagé
         for resource, amount in data['inventory'].items():
             self.player.inventory[resource] = amount
 
-        print(f"✅ Synchronisation complète ({len(self.remote_players)} autres joueurs, {len(self.buildings_list)} bâtiments)")
+        print(f"✅ Synchronisation complète ({len(self.remote_players)} autres joueurs, {len(self.buildings_list)} bâtiments, {len(self.enemies_list)} ennemis)")
 
     def load_game_state(self, save_data):
         """
@@ -557,6 +611,13 @@ class Game:
 
         # Compter les ennemis tués avant de les retirer
         enemies_before = len(self.enemies_list)
+
+        # Envoyer les morts d'ennemis en multijoueur
+        if self.is_multiplayer and self.network_client and self.network_client.connected:
+            for enemy in self.enemies_list:
+                if not enemy.is_alive and hasattr(enemy, 'network_id'):
+                    self.network_client.send_enemy_death(enemy.network_id)
+
         self.enemies_list = [enemy for enemy in self.enemies_list if enemy.is_alive]
         enemies_after = len(self.enemies_list)
         enemies_killed = enemies_before - enemies_after
@@ -585,6 +646,20 @@ class Game:
             self.zombie_spawn_timer = 0
             map_size = GRID_SIZE * TILE_SIZE
             new_zombie = spawn_zombie_randomly(map_size)
+
+            # Assigner un ID réseau en multijoueur
+            if self.is_multiplayer:
+                new_zombie.network_id = self.next_enemy_id
+                self.next_enemy_id += 1
+                # Envoyer au serveur
+                if self.network_client and self.network_client.connected:
+                    self.network_client.send_enemy_spawn(
+                        new_zombie.network_id,
+                        'zombie',
+                        new_zombie.position_x,
+                        new_zombie.position_y
+                    )
+
             self.enemies_list.append(new_zombie)
             print("Un zombie est apparu !")
 
@@ -594,6 +669,20 @@ class Game:
             self.mutant_spawn_timer = 0
             map_size = GRID_SIZE * TILE_SIZE
             new_mutant = spawn_mutant_randomly(map_size)
+
+            # Assigner un ID réseau en multijoueur
+            if self.is_multiplayer:
+                new_mutant.network_id = self.next_enemy_id
+                self.next_enemy_id += 1
+                # Envoyer au serveur
+                if self.network_client and self.network_client.connected:
+                    self.network_client.send_enemy_spawn(
+                        new_mutant.network_id,
+                        'mutant',
+                        new_mutant.position_x,
+                        new_mutant.position_y
+                    )
+
             self.enemies_list.append(new_mutant)
             print("Un mutant est apparu !")
 
@@ -605,6 +694,20 @@ class Game:
             pack_size = random.randint(1, 3)  # Meute de 1 à 3 loups
             for _ in range(pack_size):
                 new_wolf = spawn_wolf_randomly(map_size)
+
+                # Assigner un ID réseau en multijoueur
+                if self.is_multiplayer:
+                    new_wolf.network_id = self.next_enemy_id
+                    self.next_enemy_id += 1
+                    # Envoyer au serveur
+                    if self.network_client and self.network_client.connected:
+                        self.network_client.send_enemy_spawn(
+                            new_wolf.network_id,
+                            'wolf',
+                            new_wolf.position_x,
+                            new_wolf.position_y
+                        )
+
                 self.enemies_list.append(new_wolf)
             print(f"Une meute de {pack_size} loup(s) est apparue !")
 

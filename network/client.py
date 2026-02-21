@@ -4,11 +4,13 @@ CLIENT.PY
 Client réseau pour le multijoueur.
 Se connecte au serveur et synchronise l'état du jeu.
 """
-
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import socket
 import threading
 import time
-from protocol import *
+from .protocol import *
 
 
 class NetworkClient:

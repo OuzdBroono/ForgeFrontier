@@ -198,8 +198,8 @@ class GameServer:
         elif msg_type == MSG_INVENTORY_UPDATE:
             # Mettre à jour l'inventaire partagé
             self.game_state['inventory'] = data['inventory']
-            # Relayer à tous les clients
-            self.broadcast(message)
+            # Relayer aux AUTRES clients (pas l'émetteur)
+            self.broadcast(message, exclude=client_socket)
 
         elif msg_type == MSG_BUILDING_PLACE:
             # Ajouter le bâtiment à l'état du jeu
@@ -209,8 +209,8 @@ class GameServer:
                 'grid_y': data['grid_y']
             }
             self.game_state['buildings'].append(building_data)
-            # Relayer à tous les clients
-            self.broadcast(message)
+            # Relayer aux AUTRES clients (pas l'émetteur)
+            self.broadcast(message, exclude=client_socket)
 
         elif msg_type == MSG_ENEMY_SPAWN:
             # Ajouter l'ennemi à l'état du jeu (si le serveur gère les ennemis)
@@ -222,16 +222,16 @@ class GameServer:
                 'y': data['spawn_y'],
                 'health': 30  # HP par défaut
             }
-            # Relayer à tous les clients
-            self.broadcast(message)
+            # Relayer aux AUTRES clients (pas l'émetteur)
+            self.broadcast(message, exclude=client_socket)
 
         elif msg_type == MSG_ENEMY_DEATH:
             # Retirer l'ennemi
             enemy_id = data['enemy_id']
             if enemy_id in self.game_state['enemies']:
                 del self.game_state['enemies'][enemy_id]
-            # Relayer à tous les clients
-            self.broadcast(message)
+            # Relayer aux AUTRES clients (pas l'émetteur)
+            self.broadcast(message, exclude=client_socket)
 
         elif msg_type == MSG_HEARTBEAT:
             # Répondre au heartbeat
