@@ -207,7 +207,7 @@ class Game:
                     if save_data:
                         self.load_game_state(save_data)
 
-                # Touches 1-8 pour sélectionner un bâtiment à construire
+                # Touches 1-9 pour sélectionner un bâtiment à construire
                 building_keys = {
                     pygame.K_1: 'mine',
                     pygame.K_2: 'farm',
@@ -216,7 +216,8 @@ class Game:
                     pygame.K_5: 'rocket',
                     pygame.K_6: 'hospital',
                     pygame.K_7: 'laboratory',
-                    pygame.K_8: 'wall'
+                    pygame.K_8: 'wall',
+                    pygame.K_9: 'warehouse'
                 }
 
                 if event.key in building_keys:

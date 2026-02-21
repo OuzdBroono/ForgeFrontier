@@ -109,17 +109,17 @@ class UserInterface:
         screen.blit(menu_background, (0, menu_y))
 
         # Titre
-        title_text = self.font_normal.render("Construction (1-8): ", True, COLOR_WHITE)
+        title_text = self.font_normal.render("Construction (1-9): ", True, COLOR_WHITE)
         screen.blit(title_text, (10, menu_y + 10))
 
         # Afficher chaque type de bâtiment
-        button_width = 95  # Réduit pour afficher 8 bâtiments
+        button_width = 88  # Réduit pour afficher 9 bâtiments
         button_height = 70
-        button_spacing = 8
+        button_spacing = 7
         start_x = 10
         start_y = menu_y + 40
 
-        building_keys = ['mine', 'farm', 'generator', 'turret', 'rocket', 'hospital', 'laboratory', 'wall']
+        building_keys = ['mine', 'farm', 'generator', 'turret', 'rocket', 'hospital', 'laboratory', 'wall', 'warehouse']
         for index, building_key in enumerate(building_keys):
             building_info = BUILDING_TYPES[building_key]
             button_x = start_x + index * (button_width + button_spacing)
@@ -197,7 +197,7 @@ class UserInterface:
         controls = [
             "ZQSD/Flèches: Déplacer",
             "Clic: Récolter/Construire",
-            "1-8: Bâtiments | C: Craft",
+            "1-9: Bâtiments | C: Craft",
             "E: Manger | F5: Save",
             "F9: Load | ESC: Quitter"
         ]
