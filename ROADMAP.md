@@ -119,13 +119,32 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ---
 
-## 📋 Phase 7 : Multijoueur (Optionnel)
+## ✅ Phase 7 : Multijoueur - PARTIELLEMENT COMPLÉTÉE
 
-### Phase 7A : Multijoueur en Ligne
-- [ ] Serveur dédié
-- [ ] Synchronisation réseau
-- [ ] Mode coopératif (2-4 joueurs)
+### ✅ Phase 7B : Multijoueur en Ligne - COMPLÉTÉE
+- [x] Serveur dédié (TCP Socket)
+- [x] Synchronisation réseau (JSON Protocol)
+- [x] Mode coopératif (2-4 joueurs)
+- [x] Support Hamachi/VPN
+- [x] Inventaire partagé
+- [x] Synchronisation bâtiments et ennemis
+- [x] Documentation complète
+
+### 📋 Phase 7A : Coopération Locale (Split-Screen) - REPORTÉE
+- [ ] Split-screen 2 joueurs
+- [ ] Inventaires séparés option
+- [ ] Objectifs communs
+
+### 📋 Phase 7C : Améliorations Multijoueur - PLANIFIÉE
+- [ ] Chat textuel in-game
+- [ ] Lobby de sélection
 - [ ] Mode compétitif (bases rivales)
+- [ ] Interpolation de mouvement (smooth)
+- [ ] Prédiction côté client
+- [ ] Compression de données
+- [ ] Anti-cheat avancé
+- [ ] Reconnexion automatique
+- [ ] Spectateurs
 
 ---
 
@@ -181,5 +200,5 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 ---
 
 **Dernière mise à jour** : 2026-02-21
-**Version actuelle** : 0.3.0
-**Prochaine version** : 0.4.0 (Phase 3A - Pathfinding)
+**Version actuelle** : 0.4.0 (Multijoueur opérationnel!)
+**Prochaine version** : 0.5.0 (Phase 7C améliorations OU Phase 3A Pathfinding)

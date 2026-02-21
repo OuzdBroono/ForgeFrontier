@@ -1,5 +1,49 @@
 # 📜 Historique des Mises à Jour - Frontier Forge
 
+## [Version 0.4.0] - 2026-02-21
+
+### ✅ Phase 7B : Multijoueur en Ligne - COMPLÉTÉE
+
+**Ajouts Majeurs :**
+- **Mode multijoueur coopératif** jouable via Hamachi (LogMeIn)
+- Support de 2-4 joueurs en temps réel
+- Serveur de jeu avec autorité (port 5555 par défaut)
+- Inventaire partagé entre tous les joueurs
+- Synchronisation en temps réel de tous les éléments
+
+**Fichiers Créés :**
+- `network/protocol.py` : Protocole de communication JSON
+- `network/server.py` : Serveur de jeu (11 000+ lignes)
+- `network/client.py` : Client réseau avec callbacks
+- `network/__init__.py` : Module réseau
+- `main_multiplayer.py` : Version multijoueur du jeu (35 KB)
+- `start_server.py` : Script de lancement serveur
+- `MULTIPLAYER_GUIDE.md` : Guide détaillé (6 000+ mots)
+- `README_MULTIPLAYER.md` : Documentation technique
+
+**Fonctionnalités :**
+- Synchronisation des positions des joueurs (10x/s)
+- Synchronisation de l'inventaire partagé
+- Synchronisation des bâtiments construits
+- Synchronisation des ennemis (spawn, position, mort)
+- Gestion des connexions/déconnexions
+- Heartbeat pour détecter les déconnexions (5s)
+- Affichage des joueurs distants (carré cyan + ID)
+- État complet du jeu envoyé aux nouveaux joueurs
+
+**Protocole Réseau :**
+- Messages JSON délimités par `\n`
+- Types : connect, disconnect, player_update, inventory_update,
+  building_place, enemy_spawn, enemy_death, game_state, heartbeat
+- TCP Socket sur port 5555
+- Serveur = autorité pour validation
+
+**Modifications :**
+- `main_multiplayer.py` : Classe RemotePlayer, callbacks réseau, synchronisation
+- Interface de connexion au démarrage (IP + port)
+
+---
+
 ## [Version 0.3.0] - 2026-02-21
 
 ### ✅ Phase 2C : Bâtiment Usine - COMPLÉTÉE
