@@ -5,7 +5,7 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ---
 
-## 📋 Phase 2 : Expansion des Bâtiments (EN COURS)
+## ✅ Phase 2 : Expansion des Bâtiments - COMPLÉTÉE
 
 ### ✅ Phase 2A : Bâtiment Mur - COMPLÉTÉE
 - [x] Implémentation de la classe Wall
@@ -14,20 +14,20 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 - [x] Barre de durabilité
 - [x] Tests et validation
 
-### 🚧 Phase 2B : Bâtiment Entrepôt - EN COURS
-- [ ] Vérifier l'implémentation de la classe Warehouse
-- [ ] Ajouter au menu de construction (touche 9)
-- [ ] Interface utilisateur mise à jour (1-9)
-- [ ] Tests de production passive
-- [ ] Documentation
+### ✅ Phase 2B : Bâtiment Entrepôt - COMPLÉTÉE
+- [x] Vérification de l'implémentation de la classe Warehouse
+- [x] Ajout au menu de construction (touche 9)
+- [x] Interface utilisateur mise à jour (1-9)
+- [x] Tests de production passive
+- [x] Documentation (CHANGELOG.md, ROADMAP.md créés)
 
-### 📋 Phase 2C : Bâtiment Usine - PLANIFIÉE
-- [ ] Vérifier l'implémentation de la classe Factory
-- [ ] Ajouter au menu de construction (touche 0)
-- [ ] Système d'assignation de recettes
-- [ ] Interface de gestion de l'usine
-- [ ] Tests de crafting automatique
-- [ ] Documentation
+### ✅ Phase 2C : Bâtiment Usine - COMPLÉTÉE
+- [x] Vérification de l'implémentation de la classe Factory
+- [x] Ajout au menu de construction (touche 0)
+- [x] Système de crafting automatique intégré
+- [x] Gestion des recettes assignées
+- [x] Tests de crafting automatique
+- [x] Documentation mise à jour
 
 ---
 
@@ -151,10 +151,10 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ## 🎯 Priorités Actuelles
 
-1. **Phase 2B** : Intégrer l'Entrepôt dans le jeu
-2. **Phase 2C** : Intégrer l'Usine dans le jeu
-3. **Phase 3A** : Pathfinding pour les ennemis
-4. **Phase 6A** : Améliorer les graphismes de base
+1. **Phase 3A** : Pathfinding pour les ennemis (SUIVANT)
+2. **Phase 6A** : Améliorer les graphismes de base
+3. **Phase 4A** : Arbre technologique
+4. **Phase 5A** : Nouveaux biomes
 
 ---
 
@@ -181,5 +181,5 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 ---
 
 **Dernière mise à jour** : 2026-02-21
-**Version actuelle** : 0.2.0
-**Prochaine version** : 0.3.0 (Phase 2B + 2C complétées)
+**Version actuelle** : 0.3.0
+**Prochaine version** : 0.4.0 (Phase 3A - Pathfinding)

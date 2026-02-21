@@ -1,5 +1,45 @@
 # 📜 Historique des Mises à Jour - Frontier Forge
 
+## [Version 0.3.0] - 2026-02-21
+
+### ✅ Phase 2C : Bâtiment Usine - COMPLÉTÉE
+
+**Ajouts :**
+- Nouveau bâtiment : **Usine** (touche 0)
+  - Coût : 30 métal + 15 pierre + 1 matériau avancé
+  - Crafting automatique : produit selon la recette assignée
+  - Intervalle de production : 10 secondes
+- Système de crafting automatique intégré
+  - Les usines craftent automatiquement si les ressources sont disponibles
+  - Affichage console des items produits
+- Interface mise à jour : menu de construction affiche 10 bâtiments (1-9, 0)
+- Largeur des boutons optimisée pour 10 bâtiments (82px)
+
+**Fichiers modifiés :**
+- `main.py` : Ajout touche 0, logique de crafting automatique
+- `ui.py` : Menu construction 1-9,0, boutons redimensionnés
+- `CHANGELOG.md` : Mise à jour
+
+---
+
+### ✅ Phase 2B : Bâtiment Entrepôt - COMPLÉTÉE
+
+**Ajouts :**
+- Nouveau bâtiment : **Entrepôt** (touche 9)
+  - Coût : 20 bois + 10 pierre
+  - Production passive : +1 métal, nourriture, bois, pierre toutes les 2s
+  - Hub commercial polyvalent
+- Interface mise à jour : menu de construction affiche 9 bâtiments (1-9)
+- Documentation complète ajoutée
+
+**Fichiers modifiés :**
+- `main.py` : Ajout touche 9 pour Entrepôt
+- `ui.py` : Menu construction 1-9, largeur boutons ajustée (88px)
+- `CHANGELOG.md` : Nouveau fichier créé
+- `ROADMAP.md` : Nouveau fichier créé avec plan de développement
+
+---
+
 ## [Version 0.2.0] - 2026-02-21
 
 ### ✅ Phase 2A : Bâtiment Mur - COMPLÉTÉE

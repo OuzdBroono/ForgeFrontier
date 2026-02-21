@@ -207,7 +207,7 @@ class Game:
                     if save_data:
                         self.load_game_state(save_data)
 
-                # Touches 1-9 pour sélectionner un bâtiment à construire
+                # Touches 1-9 et 0 pour sélectionner un bâtiment à construire
                 building_keys = {
                     pygame.K_1: 'mine',
                     pygame.K_2: 'farm',
@@ -217,7 +217,8 @@ class Game:
                     pygame.K_6: 'hospital',
                     pygame.K_7: 'laboratory',
                     pygame.K_8: 'wall',
-                    pygame.K_9: 'warehouse'
+                    pygame.K_9: 'warehouse',
+                    pygame.K_0: 'factory'
                 }
 
                 if event.key in building_keys:
@@ -357,6 +358,22 @@ class Game:
             # Si c'est une tourelle, elle attaque les ennemis
             if isinstance(building, Turret):
                 building.attack_enemies(self.enemies_list, self.delta_time)
+
+        # Traiter les demandes de craft automatique des usines
+        if '_factory_craft' in self.player.inventory and self.player.inventory['_factory_craft']:
+            for recipe_id in self.player.inventory['_factory_craft']:
+                # Essayer de crafter la recette
+                if self.crafting_system.can_craft(recipe_id, self.player.inventory):
+                    # Consommer les ressources
+                    recipe = self.crafting_system.get_recipe(recipe_id)
+                    if recipe:
+                        for resource, amount in recipe.ingredients.items():
+                            self.player.inventory[resource] -= amount
+                        # Ajouter le produit
+                        self.player.inventory[recipe.result] = self.player.inventory.get(recipe.result, 0) + recipe.result_amount
+                        print(f"Usine a fabriqué : {recipe.result} x{recipe.result_amount}")
+            # Vider la liste des crafts de l'usine
+            self.player.inventory['_factory_craft'] = []
 
         # Appliquer les soins des hôpitaux
         if '_hospital_heal' in self.player.inventory and self.player.inventory['_hospital_heal'] > 0:
