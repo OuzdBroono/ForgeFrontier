@@ -119,23 +119,38 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ---
 
-## ✅ Phase 7 : Multijoueur - PARTIELLEMENT COMPLÉTÉE
+## 🚧 Phase 7 : Multijoueur - EN COURS
 
-### ✅ Phase 7B : Multijoueur en Ligne - COMPLÉTÉE
+### ✅ Phase 7B : Multijoueur en Ligne - COMPLÉTÉE (Partielle)
 - [x] Serveur dédié (TCP Socket)
 - [x] Synchronisation réseau (JSON Protocol)
 - [x] Mode coopératif (2-4 joueurs)
 - [x] Support Hamachi/VPN
 - [x] Inventaire partagé
-- [x] Synchronisation bâtiments et ennemis
+- [x] Synchronisation bâtiments (corrigée 2026-02-21)
+- [x] Callbacks ennemis (ajoutés 2026-02-21)
 - [x] Documentation complète
+
+### 🔥 Phase 7B-Fix : Corrections Synchronisation - EN COURS
+**Statut** : 🟡 Implémentation complétée, tests en attente
+- [x] Fix duplication bâtiments (commit 10a3da3)
+- [x] Fix duplication inventaire (commit 10a3da3)
+- [x] Ajout callbacks ennemis (commit 10a3da3)
+- [x] Synchronisation cycle jour/nuit (commit 1176e80 - 2026-02-23)
+- [x] Logs debug pour diagnostic (commit 1176e80 - 2026-02-23)
+- [x] Fenêtre adaptative + F11 plein écran (commit 3b95170 - 2026-02-23)
+- [ ] Tests complets 2 joueurs (validation logs debug)
+- [ ] Tests complets 4 joueurs
+- [ ] Suppression logs debug après validation
+
+**Note** : Le code de dessin des RemotePlayer est déjà présent (lignes 859-862). Les logs debug permettront de vérifier si les callbacks sont appelés correctement.
 
 ### 📋 Phase 7A : Coopération Locale (Split-Screen) - REPORTÉE
 - [ ] Split-screen 2 joueurs
 - [ ] Inventaires séparés option
 - [ ] Objectifs communs
 
-### 📋 Phase 7C : Améliorations Multijoueur - PLANIFIÉE
+### 📋 Phase 7C : Améliorations Multijoueur - REPORTÉE (après 7B-Fix)
 - [ ] Chat textuel in-game
 - [ ] Lobby de sélection
 - [ ] Mode compétitif (bases rivales)
@@ -168,12 +183,23 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ---
 
-## 🎯 Priorités Actuelles
+## 🎯 Priorités Actuelles (Mise à jour 2026-02-21)
 
-1. **Phase 3A** : Pathfinding pour les ennemis (SUIVANT)
-2. **Phase 6A** : Améliorer les graphismes de base
-3. **Phase 4A** : Arbre technologique
-4. **Phase 5A** : Nouveaux biomes
+### 🔥 URGENT (À faire IMMÉDIATEMENT)
+1. **Phase 7B-Fix** : Corriger affichage joueurs distants (CRITIQUE)
+   - Ajouter draw() des remote_players dans boucle de rendu
+   - Vérifier affichage ennemis synchronisés
+   - Synchroniser cycle jour/nuit
+
+2. **Feature** : Fenêtre adaptative (CODE PRÊT, non committé)
+   - Tester modifications
+   - Commit "Fenêtre adaptative + plein écran (F11)"
+
+### 📋 MOYEN TERME
+3. **Phase 3A** : Pathfinding pour les ennemis
+4. **Phase 6A** : Améliorer les graphismes de base
+5. **Phase 4A** : Arbre technologique
+6. **Phase 5A** : Nouveaux biomes
 
 ---
 
@@ -199,6 +225,9 @@ Frontier Forge vise à devenir un jeu de gestion/survie 2D riche et profond, com
 
 ---
 
-**Dernière mise à jour** : 2026-02-21
-**Version actuelle** : 0.4.0 (Multijoueur opérationnel!)
-**Prochaine version** : 0.5.0 (Phase 7C améliorations OU Phase 3A Pathfinding)
+**Dernière mise à jour** : 2026-02-21 23:30
+**Version actuelle** : 0.4.1-dev (Corrections multijoueur en cours)
+**Dernier commit** : 10a3da3 (Phase 7B Fix : Correction synchronisation)
+**Prochaine version** : 0.4.2 (Phase 7B-Fix complète) puis 0.5.0 (Fenêtre adaptative)
+
+**⚠️ FICHIER SESSION** : Voir `SESSION_2026-02-21.md` pour détails complets

@@ -1,5 +1,37 @@
 # 📜 Historique des Mises à Jour - Frontier Forge
 
+## [Version 0.4.1] - 2026-02-23
+
+### ✅ Fenêtre Adaptative + Synchronisation Jour/Nuit
+
+**Nouvelles Fonctionnalités :**
+- **Fenêtre adaptative** : Détection automatique de la résolution écran (85% hauteur)
+- **Mode plein écran** : Touche F11 pour basculer
+- **UI responsive** : Tous les éléments s'adaptent dynamiquement
+- **Synchronisation jour/nuit** : Le serveur est l'autorité pour le temps de jeu
+- **Logs debug** : Diagnostic réseau pour validation multijoueur
+
+**Améliorations Multijoueur :**
+- Serveur met à jour `elapsed_time` en continu (thread dédié)
+- Temps inclus dans les heartbeats (synchronisation toutes les 5s)
+- Clients synchronisent le cycle jour/nuit avec le serveur
+- Callback `on_heartbeat` pour mise à jour temps
+- Affichage état réseau toutes les 2s (debug)
+
+**Fichiers Modifiés :**
+- `constants.py` : Ajout `SCREEN_SCALE_PERCENT = 0.85`
+- `main.py` : Méthodes `get_optimal_screen_size()` et `toggle_fullscreen()`
+- `main_multiplayer.py` : Fenêtre adaptative + sync temps + logs debug
+- `ui.py` : Interface utilise `screen.get_width/height()` dynamiquement
+- `network/server.py` : Thread `update_game_time()`, heartbeat avec temps
+- `network/client.py` : Callback `on_heartbeat`
+
+**Commits :**
+- `3b95170` : Fenêtre adaptative + F11 plein écran
+- `1176e80` : Synchronisation jour/nuit + logs debug multijoueur
+
+---
+
 ## [Version 0.4.0] - 2026-02-21
 
 ### ✅ Phase 7B : Multijoueur en Ligne - COMPLÉTÉE
