@@ -65,7 +65,7 @@ class UserInterface:
             player: Instance du joueur
         """
         # Fond pour l'inventaire (coin supérieur droit)
-        inventory_x = SCREEN_WIDTH - 220
+        inventory_x = screen.get_width() - 220
         inventory_background = pygame.Surface((210, 110), pygame.SRCALPHA)
         inventory_background.fill((0, 0, 0, 180))
         screen.blit(inventory_background, (inventory_x, 10))
@@ -101,10 +101,10 @@ class UserInterface:
             player: Instance du joueur
         """
         menu_height = 120
-        menu_y = SCREEN_HEIGHT - menu_height
+        menu_y = screen.get_height() - menu_height
 
         # Fond du menu
-        menu_background = pygame.Surface((SCREEN_WIDTH, menu_height), pygame.SRCALPHA)
+        menu_background = pygame.Surface((screen.get_width(), menu_height), pygame.SRCALPHA)
         menu_background.fill((0, 0, 0, 200))
         screen.blit(menu_background, (0, menu_y))
 
@@ -169,7 +169,7 @@ class UserInterface:
         time_text = self.font_normal.render(f"Jour {current_day}/{SURVIVAL_DAYS_TO_WIN} - {phase}", True, COLOR_WHITE)
 
         # Afficher en haut au centre
-        text_rect = time_text.get_rect(center=(SCREEN_WIDTH // 2, 20))
+        text_rect = time_text.get_rect(center=(screen.get_width() // 2, 20))
 
         # Fond
         background_rect = pygame.Rect(text_rect.x - 10, text_rect.y - 5, text_rect.width + 20, text_rect.height + 10)
@@ -186,10 +186,10 @@ class UserInterface:
             screen: Surface Pygame
         """
         help_x = 10
-        help_y = SCREEN_HEIGHT - 250
+        help_y = screen.get_height() - 250
 
-        # Fond
-        help_background = pygame.Surface((250, 100), pygame.SRCALPHA)
+        # Fond (augmenté pour 6 lignes au lieu de 5)
+        help_background = pygame.Surface((250, 120), pygame.SRCALPHA)
         help_background.fill((0, 0, 0, 150))
         screen.blit(help_background, (help_x, help_y))
 
@@ -199,7 +199,8 @@ class UserInterface:
             "Clic: Récolter/Construire",
             "1-9,0: Bâtiments | C: Craft",
             "E: Manger | F5: Save",
-            "F9: Load | ESC: Quitter"
+            "F9: Load | F11: Plein écran",
+            "ESC: Quitter"
         ]
 
         for index, control_text in enumerate(controls):
@@ -213,23 +214,23 @@ class UserInterface:
             screen: Surface Pygame
         """
         # Fond semi-transparent
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
         screen.blit(overlay, (0, 0))
 
         # Texte de victoire
         victory_text = self.font_large.render("VICTOIRE !", True, COLOR_YELLOW)
-        victory_rect = victory_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+        victory_rect = victory_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 50))
         screen.blit(victory_text, victory_rect)
 
         # Sous-texte
         subtitle_text = self.font_normal.render("Vous avez construit la fusée !", True, COLOR_WHITE)
-        subtitle_rect = subtitle_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        subtitle_rect = subtitle_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
         screen.blit(subtitle_text, subtitle_rect)
 
         # Instructions
         instruction_text = self.font_small.render("Appuyez sur ESC pour quitter", True, COLOR_WHITE)
-        instruction_rect = instruction_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+        instruction_rect = instruction_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 + 50))
         screen.blit(instruction_text, instruction_rect)
 
     def draw_game_over_screen(self, screen):
@@ -239,23 +240,23 @@ class UserInterface:
             screen: Surface Pygame
         """
         # Fond semi-transparent
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
         screen.blit(overlay, (0, 0))
 
         # Texte de défaite
         game_over_text = self.font_large.render("GAME OVER", True, COLOR_RED)
-        game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+        game_over_rect = game_over_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 50))
         screen.blit(game_over_text, game_over_rect)
 
         # Sous-texte
         subtitle_text = self.font_normal.render("Vous êtes mort...", True, COLOR_WHITE)
-        subtitle_rect = subtitle_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        subtitle_rect = subtitle_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
         screen.blit(subtitle_text, subtitle_rect)
 
         # Instructions
         instruction_text = self.font_small.render("Appuyez sur ESC pour quitter", True, COLOR_WHITE)
-        instruction_rect = instruction_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+        instruction_rect = instruction_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 + 50))
         screen.blit(instruction_text, instruction_rect)
 
     def draw_quest_panel(self, screen, quest_manager):
@@ -270,7 +271,7 @@ class UserInterface:
             return
 
         # Position du panneau (côté droit, sous l'inventaire)
-        panel_x = SCREEN_WIDTH - 350
+        panel_x = screen.get_width() - 350
         panel_y = 600
 
         # Calculer la hauteur nécessaire
@@ -328,11 +329,11 @@ class UserInterface:
         # Dimensions du menu (centré)
         menu_width = 600
         menu_height = 500
-        menu_x = (SCREEN_WIDTH - menu_width) // 2
-        menu_y = (SCREEN_HEIGHT - menu_height) // 2
+        menu_x = (screen.get_width() - menu_width) // 2
+        menu_y = (screen.get_height() - menu_height) // 2
 
         # Fond semi-transparent
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 150))
         screen.blit(overlay, (0, 0))
 

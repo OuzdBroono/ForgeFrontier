@@ -6,9 +6,11 @@ Centraliser les constantes facilite les modifications et la maintenance.
 """
 
 # === CONFIGURATION DE LA FENÊTRE ===
-SCREEN_WIDTH = 1800  # Largeur de la fenêtre en pixels
-SCREEN_HEIGHT = 900  # Hauteur de la fenêtre en pixels
+# Note: Ces valeurs seront remplacées par la détection automatique au démarrage
+SCREEN_WIDTH = 1800  # Largeur par défaut (sera ajustée automatiquement)
+SCREEN_HEIGHT = 900  # Hauteur par défaut (sera ajustée automatiquement)
 FRAMES_PER_SECOND = 60  # Nombre d'images par seconde (fluidité du jeu)
+SCREEN_SCALE_PERCENT = 0.85  # Pourcentage de l'écran utilisé (85%)
 
 # === CONFIGURATION DE LA GRILLE ===
 GRID_SIZE = 200  # Taille de la grille (20x20 cases)
