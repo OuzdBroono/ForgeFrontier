@@ -70,9 +70,15 @@ class Game:
         # Initialiser Pygame
         pygame.init()
 
-        # Créer la fenêtre
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        # Détecter la résolution de l'écran et calculer la taille de la fenêtre
+        self.screen_width, self.screen_height = self.get_optimal_screen_size()
+
+        # Créer la fenêtre (mode fenêtré par défaut)
+        self.is_fullscreen = False
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Frontier Forge - Prototype de Gestion")
+
+        print(f"🖥️ Résolution de la fenêtre : {self.screen_width}x{self.screen_height}")
 
         # Horloge pour contrôler les FPS
         self.clock = pygame.time.Clock()
@@ -87,6 +93,50 @@ class Game:
 
         # Initialiser les composants du jeu
         self.initialize_game()
+
+    def get_optimal_screen_size(self):
+        """
+        Détecte la résolution de l'écran et calcule la taille optimale de la fenêtre
+        Returns:
+            tuple: (largeur, hauteur) optimales
+        """
+        # Obtenir les informations sur l'écran
+        display_info = pygame.display.Info()
+        monitor_width = display_info.current_w
+        monitor_height = display_info.current_h
+
+        # Calculer la taille de la fenêtre (85% de la hauteur de l'écran)
+        target_height = int(monitor_height * SCREEN_SCALE_PERCENT)
+        # Garder le ratio 2:1 (comme 1800:900)
+        target_width = target_height * 2
+
+        # S'assurer que la largeur ne dépasse pas 90% de l'écran
+        max_width = int(monitor_width * 0.9)
+        if target_width > max_width:
+            target_width = max_width
+            target_height = target_width // 2
+
+        print(f"📺 Résolution écran : {monitor_width}x{monitor_height}")
+        print(f"🎮 Taille fenêtre : {target_width}x{target_height} ({int(SCREEN_SCALE_PERCENT*100)}% de l'écran)")
+
+        return target_width, target_height
+
+    def toggle_fullscreen(self):
+        """Bascule entre mode fenêtré et plein écran"""
+        self.is_fullscreen = not self.is_fullscreen
+
+        if self.is_fullscreen:
+            # Mode plein écran
+            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            # Obtenir la taille réelle en plein écran
+            self.screen_width = self.screen.get_width()
+            self.screen_height = self.screen.get_height()
+            print(f"🖥️ Mode plein écran : {self.screen_width}x{self.screen_height}")
+        else:
+            # Mode fenêtré
+            self.screen_width, self.screen_height = self.get_optimal_screen_size()
+            self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+            print(f"🪟 Mode fenêtré : {self.screen_width}x{self.screen_height}")
 
     def initialize_game(self):
         """Initialise tous les éléments du jeu"""
@@ -148,6 +198,7 @@ class Game:
         self.my_player_id = None
         self.remote_players = {}  # {player_id: RemotePlayer}
         self.last_network_update = 0  # Timer pour limiter les mises à jour réseau
+        self.debug_log_timer = 0  # Timer pour les logs de debug (toutes les 2s)
         self.next_enemy_id = 1  # ID unique pour les ennemis en multijoueur
 
     def setup_multiplayer(self, server_host, server_port):
@@ -171,6 +222,7 @@ class Game:
         self.network_client.on_enemy_update = self.on_network_enemy_update
         self.network_client.on_enemy_death = self.on_network_enemy_death
         self.network_client.on_game_state = self.on_network_game_state
+        self.network_client.on_heartbeat = self.on_network_heartbeat
 
         # Se connecter
         if self.network_client.connect(server_host, server_port):
@@ -197,13 +249,16 @@ class Game:
     def on_network_player_update(self, data):
         """Appelé quand on reçoit une mise à jour d'un autre joueur"""
         player_id = data['player_id']
+        print(f"🔔 CALLBACK APPELÉ : Joueur {player_id} à ({data['x']:.0f}, {data['y']:.0f})")
 
         # Ignorer notre propre mise à jour
         if player_id == self.my_player_id:
+            print(f"  ⏭️ Ignoré (c'est moi)")
             return
 
         # Créer ou mettre à jour le joueur distant
         if player_id not in self.remote_players:
+            print(f"  ➕ Création nouveau joueur distant {player_id}")
             self.remote_players[player_id] = RemotePlayer(
                 player_id,
                 data['x'],
@@ -317,7 +372,17 @@ class Game:
         for resource, amount in data['inventory'].items():
             self.player.inventory[resource] = amount
 
+        # Synchroniser le temps de jeu avec le serveur
+        if 'elapsed_time' in data:
+            self.total_elapsed_time = data['elapsed_time']
+            print(f"⏰ Temps synchronisé : {self.total_elapsed_time:.1f}s")
+
         print(f"✅ Synchronisation complète ({len(self.remote_players)} autres joueurs, {len(self.buildings_list)} bâtiments, {len(self.enemies_list)} ennemis)")
+
+    def on_network_heartbeat(self, data):
+        """Appelé quand on reçoit un heartbeat du serveur (synchronisation temps)"""
+        if 'elapsed_time' in data:
+            self.total_elapsed_time = data['elapsed_time']
 
     def load_game_state(self, save_data):
         """
@@ -426,6 +491,10 @@ class Game:
                     save_data = SaveSystem.load_game()
                     if save_data:
                         self.load_game_state(save_data)
+
+                # F11 pour basculer plein écran
+                if event.key == pygame.K_F11:
+                    self.toggle_fullscreen()
 
                 # Touches 1-9 et 0 pour sélectionner un bâtiment à construire
                 building_keys = {
@@ -770,18 +839,27 @@ class Game:
                 # Envoyer l'inventaire partagé
                 self.network_client.send_inventory_update(self.player.inventory)
 
+            # DEBUG : Afficher l'état réseau toutes les 2 secondes
+            self.debug_log_timer += self.delta_time
+            if self.debug_log_timer >= 2.0:
+                self.debug_log_timer = 0
+                print(f"🌐 Joueurs distants : {len(self.remote_players)}")
+                print(f"👾 Ennemis : {len(self.enemies_list)}")
+                for player_id, rp in self.remote_players.items():
+                    print(f"  Joueur {player_id} à ({rp.position_x:.0f}, {rp.position_y:.0f})")
+
     def update_camera(self):
         """Met à jour la position de la caméra pour suivre le joueur"""
         # Centrer la caméra sur le joueur
-        self.camera_offset_x = self.player.position_x - SCREEN_WIDTH // 2
-        self.camera_offset_y = self.player.position_y - SCREEN_HEIGHT // 2
+        self.camera_offset_x = self.player.position_x - self.screen_width // 2
+        self.camera_offset_y = self.player.position_y - self.screen_height // 2
 
         # Limiter la caméra aux bords de la carte
         map_width = GRID_SIZE * TILE_SIZE
         map_height = GRID_SIZE * TILE_SIZE
 
-        self.camera_offset_x = max(0, min(self.camera_offset_x, map_width - SCREEN_WIDTH))
-        self.camera_offset_y = max(0, min(self.camera_offset_y, map_height - SCREEN_HEIGHT))
+        self.camera_offset_x = max(0, min(self.camera_offset_x, map_width - self.screen_width))
+        self.camera_offset_y = max(0, min(self.camera_offset_y, map_height - self.screen_height))
 
     def render(self):
         """Dessine tous les éléments du jeu à l'écran"""
@@ -811,7 +889,7 @@ class Game:
         day_progress = (self.total_elapsed_time % SECONDS_PER_DAY) / SECONDS_PER_DAY
         self.is_night = day_progress > DAY_PHASE_DURATION
         if self.is_night:
-            night_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+            night_overlay = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
             night_overlay.fill((*NIGHT_TINT_COLOR, NIGHT_TINT_ALPHA))
             self.screen.blit(night_overlay, (0, 0))
 
@@ -845,8 +923,8 @@ class Game:
         # Dimensions et position du menu
         menu_width = 600
         menu_height = 500
-        menu_x = (SCREEN_WIDTH - menu_width) // 2
-        menu_y = (SCREEN_HEIGHT - menu_height) // 2
+        menu_x = (self.screen_width - menu_width) // 2
+        menu_y = (self.screen_height - menu_height) // 2
 
         # Vérifier si le clic est dans le menu
         if not (menu_x <= mouse_x <= menu_x + menu_width and menu_y <= mouse_y <= menu_y + menu_height):

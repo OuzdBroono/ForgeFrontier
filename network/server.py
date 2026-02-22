@@ -43,6 +43,7 @@ class GameServer:
                 'stone': 20
             },
             'elapsed_time': 0.0,
+            'start_time': time.time(),  # Temps de démarrage du serveur
             'next_enemy_id': 1
         }
 
@@ -70,6 +71,11 @@ class GameServer:
         heartbeat_thread = threading.Thread(target=self.send_heartbeats)
         heartbeat_thread.daemon = True
         heartbeat_thread.start()
+
+        # Thread pour mettre à jour le temps de jeu
+        time_thread = threading.Thread(target=self.update_game_time)
+        time_thread.daemon = True
+        time_thread.start()
 
         # Boucle principale du serveur
         try:
@@ -261,11 +267,20 @@ class GameServer:
                 self.send_to_client(client_socket, message)
 
     def send_heartbeats(self):
-        """Envoie des heartbeats périodiques"""
+        """Envoie des heartbeats périodiques avec synchronisation du temps"""
         while self.running:
             time.sleep(5)
-            heartbeat = NetworkMessage.encode(MSG_HEARTBEAT, {})
+            # Inclure le temps de jeu dans le heartbeat pour synchronisation
+            heartbeat_data = {'elapsed_time': self.game_state['elapsed_time']}
+            heartbeat = NetworkMessage.encode(MSG_HEARTBEAT, heartbeat_data)
             self.broadcast(heartbeat)
+
+    def update_game_time(self):
+        """Met à jour le temps de jeu (autorité serveur)"""
+        while self.running:
+            time.sleep(0.1)
+            current_time = time.time()
+            self.game_state['elapsed_time'] = current_time - self.game_state['start_time']
 
     def disconnect_client(self, client_socket):
         """

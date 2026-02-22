@@ -33,6 +33,7 @@ class NetworkClient:
         self.on_enemy_update = None
         self.on_enemy_death = None
         self.on_game_state = None
+        self.on_heartbeat = None
 
         # Thread de réception
         self.receive_thread = None
@@ -187,8 +188,9 @@ class NetworkClient:
                 self.on_game_state(data)
 
         elif msg_type == MSG_HEARTBEAT:
-            # Heartbeat du serveur (on ne fait rien)
-            pass
+            # Heartbeat du serveur (synchronisation du temps)
+            if self.on_heartbeat:
+                self.on_heartbeat(data)
 
     # ===== Méthodes pour envoyer des mises à jour =====
 
