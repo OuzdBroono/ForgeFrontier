@@ -8,7 +8,7 @@ Gère la connexion des clients, synchronise l'état du jeu.
 import socket
 import threading
 import time
-from protocol import *
+from .protocol import *
 
 
 class GameServer:
